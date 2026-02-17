@@ -11,7 +11,7 @@ REPO="moekyaw-aung-mm.github.io"
 # Token မရှိရင် prompt လုပ်မယ်
 if [ -z "$GITHUB_TOKEN" ]; then
   echo ""
-  read -s -p "🔑 GitHub Token ထည့်ပါ: " GITHUB_TOKEN
+  read -s -p "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 " GITHUB_TOKEN
   echo ""
 fi
 
