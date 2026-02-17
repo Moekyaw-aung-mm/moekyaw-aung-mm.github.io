@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MKA — Design 1: Luxury Gold</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600;700&family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #c9a84c;
+  --gold-light: #f0d080;
+  --gold-dim: #6b5820;
+  --bg: #05040a;
+  --bg2: #0c0b14;
+  --white: #f0ece0;
+  --gray: #7a7265;
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Raleway', sans-serif; background: var(--bg); color: var(--white); overflow-x: hidden; cursor: none; }
+
+/* CURSOR */
+.cursor { position: fixed; width: 8px; height: 8px; background: var(--gold); border-radius: 50%; pointer-events: none; z-index: 9999; }
+.cursor-ring { position: fixed; width: 36px; height: 36px; border: 1px solid var(--gold); border-radius: 50%; pointer-events: none; z-index: 9998; opacity: 0.4; transition: transform 0.15s ease; }
+
+/* GOLDEN GRID LINES */
+.grid-lines {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(201,168,76,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,168,76,0.03) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+/* CORNER ORNAMENTS */
+.ornament { position: fixed; pointer-events: none; z-index: 1; }
+.ornament-tl { top: 20px; left: 20px; }
+.ornament-tr { top: 20px; right: 20px; transform: scaleX(-1); }
+.ornament-bl { bottom: 20px; left: 20px; transform: scaleY(-1); }
+.ornament-br { bottom: 20px; right: 20px; transform: scale(-1); }
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1.5rem 4rem;
+  animation: fadeDown 1s 0.2s both;
+}
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: none; } }
+.logo-text { font-family: 'Cinzel', serif; font-size: 1rem; letter-spacing: 0.4em; color: var(--gold); }
+nav ul { list-style: none; display: flex; gap: 2.5rem; }
+nav ul a { font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gray); text-decoration: none; transition: color 0.3s; }
+nav ul a:hover { color: var(--gold); }
+
+/* GOLD LINE DIVIDERS */
+.gold-line { width: 60px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 0 auto; }
+
+/* HERO */
+#hero {
+  min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+  padding: 0 10%; position: relative; z-index: 1;
+}
+.hero-eyebrow {
+  font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.4em; color: var(--gold);
+  text-transform: uppercase; margin-bottom: 2rem;
+  animation: fadeUp 1s 0.4s both;
+  display: flex; align-items: center; gap: 1.5rem;
+}
+.hero-eyebrow::before, .hero-eyebrow::after { content: ''; flex: 0 0 40px; height: 1px; background: var(--gold); opacity: 0.5; }
+.hero-big {
+  font-family: 'Cormorant Garamond', serif; font-size: clamp(5rem, 10vw, 11rem);
+  font-weight: 300; line-height: 0.9; letter-spacing: -0.02em;
+  animation: fadeUp 1s 0.6s both;
+}
+.hero-big em { font-style: italic; color: var(--gold-light); }
+.hero-role {
+  font-family: 'Cinzel', serif; font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+  letter-spacing: 0.5em; color: var(--gray); text-transform: uppercase;
+  margin-top: 1.5rem; animation: fadeUp 1s 0.8s both;
+}
+.hero-desc {
+  max-width: 480px; font-size: 0.85rem; line-height: 2; color: var(--gray);
+  margin-top: 2.5rem; font-weight: 300; animation: fadeUp 1s 1s both;
+  border-left: 1px solid var(--gold-dim); padding-left: 1.5rem;
+}
+.hero-cta-wrap { margin-top: 3rem; animation: fadeUp 1s 1.2s both; }
+.btn-gold {
+  display: inline-block; padding: 1rem 3rem; border: 1px solid var(--gold);
+  font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 0.3em; color: var(--gold);
+  text-decoration: none; text-transform: uppercase;
+  position: relative; overflow: hidden; cursor: none;
+  transition: color 0.4s ease;
+}
+.btn-gold::before {
+  content: ''; position: absolute; inset: 0; background: var(--gold);
+  transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease;
+}
+.btn-gold:hover::before { transform: scaleX(1); }
+.btn-gold:hover { color: var(--bg); }
+.btn-gold span { position: relative; z-index: 1; }
+
+/* FLOATING SIGIL */
+.hero-sigil {
+  position: absolute; right: 8%; top: 50%; transform: translateY(-50%);
+  animation: rotateSlow 20s linear infinite, fadeIn 1.5s 1s both;
+  width: 280px; height: 280px; opacity: 0.15;
+}
+@keyframes rotateSlow { to { transform: translateY(-50%) rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 0.15; } }
+
+/* SKILLS */
+#skills { position: relative; z-index: 1; padding: 8rem 10%; }
+.sec-header { text-align: center; margin-bottom: 5rem; }
+.sec-num { font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.4em; color: var(--gold-dim); display: block; margin-bottom: 1rem; opacity: 0; transform: translateY(15px); transition: all 0.6s; }
+.sec-num.vis { opacity: 1; transform: none; }
+.sec-h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 5vw, 5rem); font-weight: 300; line-height: 1; opacity: 0; transform: translateY(20px); transition: all 0.7s 0.1s; }
+.sec-h2.vis { opacity: 1; transform: none; }
+.sec-h2 em { font-style: italic; color: var(--gold); }
+
+.skills-masonry {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+  border: 1px solid rgba(201,168,76,0.1);
+}
+.skill-item {
+  padding: 2rem; border-right: 1px solid rgba(201,168,76,0.08); border-bottom: 1px solid rgba(201,168,76,0.08);
+  position: relative; overflow: hidden; cursor: none;
+  opacity: 0; transform: scale(0.95);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.skill-item.vis { opacity: 1; transform: none; }
+.skill-item::before {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 0;
+  background: linear-gradient(to top, rgba(201,168,76,0.05), transparent);
+  transition: height 0.4s;
+}
+.skill-item:hover::before { height: 100%; }
+.skill-item:hover { background: rgba(201,168,76,0.02); }
+.skill-roman { font-family: 'Cinzel', serif; font-size: 0.55rem; letter-spacing: 0.3em; color: var(--gold-dim); margin-bottom: 0.5rem; }
+.skill-n { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 400; color: var(--white); }
+.skill-bar-gold { margin-top: 0.8rem; height: 1px; background: rgba(201,168,76,0.15); }
+.skill-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold-dim), var(--gold)); width: 0; transition: width 1.4s cubic-bezier(0.16,1,0.3,1) 0.3s; }
+.skill-item.vis .skill-bar-fill { width: var(--w); }
+
+/* EXPERIENCE */
+#experience { position: relative; z-index: 1; padding: 4rem 10% 8rem; }
+
+.exp-luxury {
+  display: grid; grid-template-columns: 1fr 2fr; gap: 4rem; margin-bottom: 4rem;
+  padding-bottom: 4rem; border-bottom: 1px solid rgba(201,168,76,0.08);
+  opacity: 0; transform: translateY(30px); transition: all 0.7s;
+}
+.exp-luxury.vis { opacity: 1; transform: none; }
+.exp-left {}
+.exp-yr { font-family: 'Cormorant Garamond', serif; font-size: 3.5rem; font-weight: 300; color: rgba(201,168,76,0.2); line-height: 1; }
+.exp-period-s { font-family: 'Cinzel', serif; font-size: 0.55rem; letter-spacing: 0.3em; color: var(--gold); text-transform: uppercase; margin-top: 0.5rem; }
+.exp-r { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.5rem, 2.5vw, 2.2rem); font-weight: 400; line-height: 1.2; margin-bottom: 0.5rem; }
+.exp-co { font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.2em; color: var(--gold); margin-bottom: 1.5rem; }
+.exp-d { font-size: 0.82rem; line-height: 2; color: var(--gray); font-weight: 300; }
+.exp-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
+.exp-tag { padding: 0.25rem 0.8rem; border: 1px solid rgba(201,168,76,0.2); font-family: 'Cinzel', serif; font-size: 0.5rem; letter-spacing: 0.2em; color: var(--gold-dim); }
+
+/* FOOTER */
+footer { position: relative; z-index: 1; text-align: center; padding: 4rem; border-top: 1px solid rgba(201,168,76,0.1); }
+.footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-style: italic; color: var(--gold); margin-bottom: 1rem; }
+.footer-sub { font-family: 'Cinzel', serif; font-size: 0.55rem; letter-spacing: 0.4em; color: var(--gray); }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: none; } }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="ring"></div>
+<div class="grid-lines"></div>
+
+<!-- Corner ornaments -->
+<svg class="ornament ornament-tl" width="60" height="60" viewBox="0 0 60 60"><path d="M0 60 L0 0 L60 0" stroke="#c9a84c" stroke-width="0.5" fill="none" opacity="0.4"/><path d="M0 40 L0 0 L40 0" stroke="#c9a84c" stroke-width="0.5" fill="none" opacity="0.2"/><circle cx="0" cy="0" r="3" fill="#c9a84c" opacity="0.6"/></svg>
+<svg class="ornament ornament-tr" width="60" height="60" viewBox="0 0 60 60"><path d="M0 60 L0 0 L60 0" stroke="#c9a84c" stroke-width="0.5" fill="none" opacity="0.4"/><circle cx="0" cy="0" r="3" fill="#c9a84c" opacity="0.6"/></svg>
+<svg class="ornament ornament-bl" width="60" height="60" viewBox="0 0 60 60"><path d="M0 60 L0 0 L60 0" stroke="#c9a84c" stroke-width="0.5" fill="none" opacity="0.4"/><circle cx="0" cy="0" r="3" fill="#c9a84c" opacity="0.6"/></svg>
+<svg class="ornament ornament-br" width="60" height="60" viewBox="0 0 60 60"><path d="M0 60 L0 0 L60 0" stroke="#c9a84c" stroke-width="0.5" fill="none" opacity="0.4"/><circle cx="0" cy="0" r="3" fill="#c9a84c" opacity="0.6"/></svg>
+
+<nav>
+  <div class="logo-text">MKA</div>
+  <ul>
+    <li><a href="#skills">Expertise</a></li>
+    <li><a href="#experience">Career</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-eyebrow">Senior Android Developer</div>
+  <h1 class="hero-big">Moe<br>Kyaw <em>Aung</em></h1>
+  <p class="hero-role">Mobile Architect · Kotlin · Jetpack Compose</p>
+  <p class="hero-desc">Eight years of crafting Android excellence. From pixel-perfect interfaces to robust architectures — built to endure.</p>
+  <div class="hero-cta-wrap">
+    <a href="#experience" class="btn-gold"><span>View Portfolio</span></a>
+  </div>
+
+  <!-- Rotating sigil -->
+  <svg class="hero-sigil" viewBox="0 0 200 200">
+    <circle cx="100" cy="100" r="90" fill="none" stroke="#c9a84c" stroke-width="0.5"/>
+    <circle cx="100" cy="100" r="70" fill="none" stroke="#c9a84c" stroke-width="0.5"/>
+    <polygon points="100,15 185,155 15,155" fill="none" stroke="#c9a84c" stroke-width="0.5"/>
+    <polygon points="100,185 15,45 185,45" fill="none" stroke="#c9a84c" stroke-width="0.5"/>
+    <circle cx="100" cy="100" r="5" fill="#c9a84c"/>
+    <line x1="100" y1="10" x2="100" y2="190" stroke="#c9a84c" stroke-width="0.3" opacity="0.4"/>
+    <line x1="10" y1="100" x2="190" y2="100" stroke="#c9a84c" stroke-width="0.3" opacity="0.4"/>
+  </svg>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="sec-header">
+    <span class="sec-num">I. Expertise</span>
+    <h2 class="sec-h2">Technical <em>Mastery</em></h2>
+    <div class="gold-line" style="margin-top:2rem"></div>
+  </div>
+  <div class="skills-masonry">
+    <div class="skill-item" style="--w:95%"><div class="skill-roman">I</div><div class="skill-n">Kotlin</div><div class="skill-bar-gold"><div class="skill-bar-fill"></div></div></div>
+    <div class="skill-item" style="--w:90%"><div class="skill-roman">II</div><div class="skill-n">Jetpack Compose</div><div class="skill-bar-gold"><div class="skill-bar-fill"></div></div></div>
+    <div class="skill-item" style="--w:92%"><div class="skill-roman">III</div><div class="skill-n">Android SDK</div><div class="skill-bar-gold"><div class="skill-bar-fill"></div></div></div>
+    <div class="skill-item" style="--w:88%"><div class="skill-roman">IV</div><div class="skill-n">MVVM · MVI</div><div class="skill-bar-gold"><div class="skill-bar-fill"></div></div></div>
+    <div class="skill-item" style="--w:85%"><div class="skill-roman">V</div><div class="skill-n">Coroutines · Flow</div><div class="skill-bar-gold"><div class="skill-bar-fill"></div></div></div>
+    <div class="skill-item" style="--w:80%"><div class="skill-roman">VI</div><div class="skill-n">Hilt · Dagger</div><div class="skill-bar-gold"><div class="skill-bar-fill"></div></div></div>
+    <div class="skill-item" style="--w:82%"><div class="skill-roman">VII</div><div class="skill-n">Room · SQLite</div><div class="skill-bar-gold"><div class="skill-bar-fill"></div></div></div>
+    <div class="skill-item" style="--w:78%"><div class="skill-roman">VIII</div><div class="skill-n">Firebase</div><div class="skill-bar-gold"><div class="skill-bar-fill"></div></div></div>
+    <div class="skill-item" style="--w:75%"><div class="skill-roman">IX</div><div class="skill-n">CI/CD</div><div class="skill-bar-gold"><div class="skill-bar-fill"></div></div></div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="sec-header" style="margin-bottom:4rem">
+    <span class="sec-num">II. Career</span>
+    <h2 class="sec-h2">Work <em>History</em></h2>
+    <div class="gold-line" style="margin-top:2rem"></div>
+  </div>
+
+  <div class="exp-luxury">
+    <div class="exp-left">
+      <div class="exp-yr">22</div>
+      <div class="exp-period-s">2022 — Present</div>
+    </div>
+    <div>
+      <div class="exp-r">Senior Android Developer</div>
+      <div class="exp-co">FinTech Corp · Yangon</div>
+      <div class="exp-d">Led Kotlin migration and Jetpack Compose architecture. Served 500K+ monthly active users. Reduced startup time by 40%.</div>
+      <div class="exp-tags"><span class="exp-tag">Kotlin</span><span class="exp-tag">Compose</span><span class="exp-tag">MVVM</span></div>
+    </div>
+  </div>
+  <div class="exp-luxury">
+    <div class="exp-left">
+      <div class="exp-yr">19</div>
+      <div class="exp-period-s">2019 — 2022</div>
+    </div>
+    <div>
+      <div class="exp-r">Android Developer</div>
+      <div class="exp-co">MobileSoft Ltd. · Yangon</div>
+      <div class="exp-d">Built 10+ Android apps in e-commerce and logistics. Real-time tracking with WebSockets and WorkManager.</div>
+      <div class="exp-tags"><span class="exp-tag">Kotlin</span><span class="exp-tag">Firebase</span><span class="exp-tag">WorkManager</span></div>
+    </div>
+  </div>
+  <div class="exp-luxury">
+    <div class="exp-left">
+      <div class="exp-yr">16</div>
+      <div class="exp-period-s">2016 — 2019</div>
+    </div>
+    <div>
+      <div class="exp-r">Junior Android Developer</div>
+      <div class="exp-co">AppCraft Studio · Remote</div>
+      <div class="exp-d">Consumer apps for social and media streaming. Expertise in RecyclerView and Play Store deployment.</div>
+      <div class="exp-tags"><span class="exp-tag">Java</span><span class="exp-tag">Android SDK</span><span class="exp-tag">SQLite</span></div>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="footer-logo">Moe Kyaw Aung</div>
+  <div class="gold-line"></div>
+  <p class="footer-sub" style="margin-top:1.5rem">moekyaw@example.com · github.com/moekyaw-aung</p>
+</footer>
+
+<script>
+const cur = document.getElementById('cur'), ring = document.getElementById('ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove', e => {
+  mx=e.clientX; my=e.clientY;
+  cur.style.transform = `translate(${mx-4}px,${my-4}px)`;
+});
+(function anim(){ rx+=(mx-rx)*0.1; ry+=(my-ry)*0.1; ring.style.transform=`translate(${rx-18}px,${ry-18}px)`; requestAnimationFrame(anim); })();
+
+const obs = new IntersectionObserver(els => els.forEach(e => { if(e.isIntersecting) { e.target.classList.add('vis'); obs.unobserve(e.target); }}), {threshold:0.1});
+document.querySelectorAll('.sec-num,.sec-h2,.skill-item,.exp-luxury').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
