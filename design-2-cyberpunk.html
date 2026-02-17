@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MKA — Design 2: Cyberpunk Neon</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cyan: #00fff9;
+  --pink: #ff00a0;
+  --yellow: #ffee00;
+  --bg: #020408;
+  --bg2: #070d14;
+  --panel: #0a1628;
+  --white: #e0f0ff;
+  --gray: #4a6080;
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Share Tech Mono', monospace; background: var(--bg); color: var(--white); overflow-x: hidden; cursor: none; }
+
+/* CURSOR */
+.cursor {
+  position: fixed; width: 6px; height: 6px; background: var(--cyan);
+  pointer-events: none; z-index: 9999;
+  clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+  animation: cursorPulse 1s infinite;
+}
+@keyframes cursorPulse { 0%,100% { filter: drop-shadow(0 0 4px var(--cyan)); } 50% { filter: drop-shadow(0 0 12px var(--cyan)); } }
+.cursor-crosshair {
+  position: fixed; pointer-events: none; z-index: 9998;
+  width: 30px; height: 30px; transition: transform 0.12s ease;
+}
+.cursor-crosshair::before, .cursor-crosshair::after { content: ''; position: absolute; background: var(--cyan); opacity: 0.5; }
+.cursor-crosshair::before { top: 50%; left: 0; width: 100%; height: 1px; transform: translateY(-50%); }
+.cursor-crosshair::after { left: 50%; top: 0; height: 100%; width: 1px; transform: translateX(-50%); }
+
+/* SCAN LINE */
+.scanlines {
+  position: fixed; inset: 0; z-index: 200; pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px);
+  animation: scanMove 8s linear infinite;
+}
+@keyframes scanMove { from { background-position: 0 0; } to { background-position: 0 400px; } }
+
+/* MOVING SCAN */
+.scan-beam {
+  position: fixed; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  opacity: 0.3; z-index: 201; pointer-events: none;
+  animation: beamMove 5s ease-in-out infinite;
+}
+@keyframes beamMove { 0%,100% { top: 0; opacity: 0; } 10% { opacity: 0.3; } 90% { opacity: 0.3; } 100% { top: 100vh; opacity: 0; } }
+
+/* GLITCH KEYFRAMES */
+@keyframes glitch1 {
+  0%,90%,100% { clip-path: none; transform: none; }
+  91% { clip-path: polygon(0 10%, 100% 10%, 100% 30%, 0 30%); transform: translateX(-4px); }
+  93% { clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%); transform: translateX(4px); }
+  95% { clip-path: polygon(0 40%, 100% 40%, 100% 55%, 0 55%); transform: translateX(-2px); }
+}
+@keyframes glitch2 {
+  0%,92%,100% { clip-path: none; transform: none; color: var(--cyan); }
+  93% { clip-path: polygon(0 0%, 100% 0%, 100% 25%, 0 25%); transform: translateX(3px); color: var(--pink); }
+  96% { clip-path: polygon(0 70%, 100% 70%, 100% 100%, 0 100%); transform: translateX(-3px); color: var(--yellow); }
+}
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1rem 3rem;
+  background: rgba(2,4,8,0.9);
+  border-bottom: 1px solid rgba(0,255,249,0.15);
+  animation: fadeDown 0.8s both;
+}
+@keyframes fadeDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:none; } }
+.logo-cyber {
+  font-family: 'Orbitron', monospace; font-size: 1.1rem; font-weight: 900;
+  color: var(--cyan); letter-spacing: 0.1em;
+  text-shadow: 0 0 20px var(--cyan);
+  animation: glitch2 7s infinite;
+}
+nav ul { list-style: none; display: flex; gap: 2rem; }
+nav ul a {
+  font-family: 'Orbitron', monospace; font-size: 0.6rem; letter-spacing: 0.1em;
+  color: var(--gray); text-decoration: none; text-transform: uppercase; transition: all 0.3s;
+}
+nav ul a:hover { color: var(--cyan); text-shadow: 0 0 10px var(--cyan); }
+
+/* HUD CORNERS */
+.hud {
+  position: fixed; z-index: 50; pointer-events: none;
+  font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; color: rgba(0,255,249,0.3);
+}
+.hud-tl { top: 80px; left: 20px; }
+.hud-tr { top: 80px; right: 20px; text-align: right; }
+.hud-bl { bottom: 20px; left: 20px; }
+.hud-br { bottom: 20px; right: 20px; text-align: right; }
+
+/* HERO */
+#hero {
+  min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+  padding: 0 5%; position: relative; overflow: hidden;
+}
+.hero-sys {
+  font-size: 0.65rem; color: var(--cyan); opacity: 0.7; margin-bottom: 2rem;
+  animation: fadeUp 0.8s 0.3s both; letter-spacing: 0.05em;
+}
+.hero-sys span { color: var(--pink); }
+
+.hero-name-cyber {
+  font-family: 'Orbitron', monospace; font-weight: 900;
+  font-size: clamp(3rem, 7vw, 7.5rem); line-height: 0.95;
+  letter-spacing: -0.02em;
+  animation: fadeUp 0.8s 0.5s both;
+  position: relative;
+}
+.hero-name-cyber .g1 { color: var(--cyan); animation: glitch1 8s infinite; display: block; }
+.hero-name-cyber .g2 { color: var(--white); display: block; }
+
+.hero-tagline {
+  font-size: 0.75rem; color: var(--pink); letter-spacing: 0.2em; text-transform: uppercase;
+  margin-top: 1.5rem; animation: fadeUp 0.8s 0.7s both;
+  text-shadow: 0 0 15px var(--pink);
+}
+
+.terminal-box {
+  background: var(--panel); border: 1px solid rgba(0,255,249,0.15);
+  border-radius: 4px; padding: 1.5rem; max-width: 480px; margin-top: 2.5rem;
+  animation: fadeUp 0.8s 0.9s both;
+  position: relative;
+}
+.terminal-box::before {
+  content: '● ● ●'; position: absolute; top: 0.6rem; left: 1rem;
+  font-size: 0.5rem; color: var(--gray); letter-spacing: 0.3em;
+}
+.terminal-box .prompt { color: var(--cyan); font-size: 0.75rem; padding-top: 0.5rem; }
+.terminal-box .prompt span { color: var(--yellow); }
+.terminal-box .out { color: var(--gray); font-size: 0.7rem; margin-top: 0.4rem; line-height: 1.8; }
+
+.hero-btns { display: flex; gap: 1rem; margin-top: 2.5rem; animation: fadeUp 0.8s 1.1s both; }
+.btn-cyber {
+  padding: 0.7rem 2rem; font-family: 'Orbitron', monospace; font-size: 0.6rem;
+  letter-spacing: 0.1em; text-decoration: none; text-transform: uppercase;
+  position: relative; cursor: none; overflow: hidden;
+}
+.btn-cyber-primary {
+  color: var(--bg); background: var(--cyan);
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  transition: all 0.3s;
+}
+.btn-cyber-primary:hover { background: var(--pink); box-shadow: 0 0 30px var(--pink); }
+.btn-cyber-out {
+  color: var(--cyan); border: 1px solid var(--cyan);
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  transition: all 0.3s;
+}
+.btn-cyber-out:hover { background: rgba(0,255,249,0.1); box-shadow: 0 0 20px rgba(0,255,249,0.2); }
+
+/* Stats bar */
+.stats-bar {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+  margin-top: 4rem; animation: fadeUp 0.8s 1.3s both;
+}
+.stat-block {
+  background: var(--panel); border: 1px solid rgba(0,255,249,0.08); padding: 1.2rem;
+  position: relative; overflow: hidden;
+}
+.stat-block::after {
+  content: ''; position: absolute; bottom: 0; left: 0; height: 2px;
+  width: var(--w, 0); background: var(--cyan); transition: width 1.5s 1.5s cubic-bezier(0.16,1,0.3,1);
+}
+.stat-block.loaded::after { width: 100%; }
+.stat-n { font-family: 'Orbitron', monospace; font-size: 2rem; font-weight: 900; color: var(--cyan); text-shadow: 0 0 15px var(--cyan); }
+.stat-l { font-size: 0.6rem; color: var(--gray); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.2rem; }
+
+/* SKILLS */
+#skills { position: relative; z-index: 1; padding: 8rem 5%; }
+
+.skills-cyber { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; }
+.skill-row {
+  display: flex; align-items: center; gap: 1.5rem;
+  background: var(--panel); border: 1px solid rgba(0,255,249,0.05);
+  padding: 1.2rem 1.5rem;
+  opacity: 0; transform: translateX(-20px); transition: all 0.5s;
+}
+.skill-row.vis { opacity: 1; transform: none; }
+.skill-row:hover { border-color: rgba(0,255,249,0.2); }
+.skill-row:hover .skill-row-name { color: var(--cyan); text-shadow: 0 0 10px var(--cyan); }
+.skill-row-name { font-family: 'Orbitron', monospace; font-size: 0.65rem; font-weight: 600; flex: 0 0 160px; }
+.skill-row-bar { flex: 1; height: 4px; background: rgba(255,255,255,0.05); position: relative; }
+.skill-row-fill {
+  position: absolute; left: 0; top: 0; height: 100%;
+  background: linear-gradient(90deg, var(--cyan), var(--pink));
+  width: 0; transition: width 1.2s 0.4s cubic-bezier(0.16,1,0.3,1);
+  box-shadow: 0 0 10px var(--cyan);
+}
+.skill-row.vis .skill-row-fill { width: var(--w); }
+.skill-row-pct { font-size: 0.6rem; color: var(--cyan); flex: 0 0 36px; text-align: right; }
+
+/* SECTION HEAD */
+.cyber-sec-head { margin-bottom: 4rem; }
+.cyber-label { font-size: 0.6rem; color: var(--pink); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.5rem; opacity: 0; transform: translateY(10px); transition: all 0.5s; }
+.cyber-label.vis { opacity: 1; transform: none; }
+.cyber-h2 { font-family: 'Orbitron', monospace; font-size: clamp(1.8rem, 3.5vw, 3.5rem); font-weight: 900; line-height: 1; color: var(--white); opacity: 0; transform: translateY(15px); transition: all 0.6s 0.1s; }
+.cyber-h2.vis { opacity: 1; transform: none; }
+.cyber-h2 span { color: var(--cyan); text-shadow: 0 0 20px var(--cyan); }
+
+/* PROJECTS */
+#projects { position: relative; z-index: 1; padding: 4rem 5%; }
+
+.projects-cyber { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2px; }
+.proj-card-cyber {
+  background: var(--panel); border: 1px solid rgba(0,255,249,0.07);
+  padding: 2rem; position: relative; overflow: hidden; cursor: none;
+  opacity: 0; transform: translateY(20px); transition: all 0.5s;
+}
+.proj-card-cyber.vis { opacity: 1; transform: none; }
+.proj-card-cyber::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  transform: scaleX(0); transition: transform 0.5s;
+}
+.proj-card-cyber:hover::before { transform: scaleX(1); }
+.proj-card-cyber:hover { border-color: rgba(0,255,249,0.2); box-shadow: 0 0 40px rgba(0,255,249,0.05), inset 0 0 60px rgba(0,255,249,0.02); }
+.proj-id { font-size: 0.55rem; color: var(--pink); letter-spacing: 0.2em; margin-bottom: 1rem; }
+.proj-n { font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: var(--cyan); margin-bottom: 0.8rem; }
+.proj-d { font-size: 0.73rem; line-height: 1.7; color: var(--gray); margin-bottom: 1.5rem; }
+.proj-stack-cyber { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.proj-tech-cyber {
+  padding: 0.2rem 0.6rem; border: 1px solid rgba(255,0,160,0.2); font-size: 0.58rem; color: var(--pink);
+}
+
+footer { position: relative; z-index: 1; text-align: center; padding: 4rem 2rem; border-top: 1px solid rgba(0,255,249,0.1); }
+.foot-ascii { font-size: 1.5rem; color: var(--cyan); letter-spacing: 0.2em; margin-bottom: 1rem; animation: glitch2 6s infinite; font-family: 'Orbitron', monospace; }
+.foot-info { font-size: 0.65rem; color: var(--gray); letter-spacing: 0.1em; line-height: 2; }
+.foot-info a { color: var(--cyan); text-decoration: none; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+</style>
+</head>
+<body>
+<div class="cursor" id="cur" style="position:fixed;pointer-events:none;z-index:9999"></div>
+<div class="cursor-crosshair" id="ch"></div>
+<div class="scanlines"></div>
+<div class="scan-beam"></div>
+
+<!-- HUD overlays -->
+<div class="hud hud-tl">SYS_STATUS: ONLINE<br>CORE: ANDROID DEV<br>BUILD: 2024.12</div>
+<div class="hud hud-tr">LAT: 16.8661°N<br>LNG: 96.1951°E<br>LOC: YANGON, MM</div>
+<div class="hud hud-bl">CONN: SECURE<br>UPTIME: 8Y 0D</div>
+<div class="hud hud-br">KOTLIN/2.1<br>COMPOSE/1.7<br>API/35</div>
+
+<nav>
+  <div class="logo-cyber">MKA.DEV</div>
+  <ul>
+    <li><a href="#skills">SKILLS</a></li>
+    <li><a href="#projects">PROJECTS</a></li>
+    <li><a href="#contact">CONTACT</a></li>
+  </ul>
+</nav>
+
+<section id="hero">
+  <p class="hero-sys">&gt; INITIALIZING PROFILE... <span>LOADED</span> // ANDROID_DEV_v8.0</p>
+  <h1 class="hero-name-cyber">
+    <span class="g1">MOE KYAW</span>
+    <span class="g2">AUNG</span>
+  </h1>
+  <p class="hero-tagline">// ANDROID SENIOR DEVELOPER · MOBILE ARCHITECT</p>
+  <div class="terminal-box">
+    <p class="prompt">&gt; <span>whoami</span></p>
+    <p class="out">Senior Android Engineer with 8+ years building<br>high-performance mobile applications in Kotlin.</p>
+    <p class="prompt" style="margin-top:0.8rem">&gt; <span>skills --list</span></p>
+    <p class="out">Kotlin · Jetpack Compose · MVVM · Coroutines · Hilt</p>
+  </div>
+  <div class="hero-btns">
+    <a href="#projects" class="btn-cyber btn-cyber-primary">VIEW_WORK</a>
+    <a href="#contact" class="btn-cyber btn-cyber-out">CONNECT</a>
+  </div>
+  <div class="stats-bar" id="statsBar">
+    <div class="stat-block"><div class="stat-n">8+</div><div class="stat-l">Years Active</div></div>
+    <div class="stat-block"><div class="stat-n">40+</div><div class="stat-l">Apps Shipped</div></div>
+    <div class="stat-block"><div class="stat-n">2M+</div><div class="stat-l">Users Reached</div></div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="cyber-sec-head">
+    <div class="cyber-label">// skills_matrix</div>
+    <h2 class="cyber-h2">TECHNICAL <span>SKILLS</span></h2>
+  </div>
+  <div class="skills-cyber">
+    <div class="skill-row" style="--w:95%"><div class="skill-row-name">KOTLIN</div><div class="skill-row-bar"><div class="skill-row-fill"></div></div><div class="skill-row-pct">95%</div></div>
+    <div class="skill-row" style="--w:90%"><div class="skill-row-name">JETPACK COMPOSE</div><div class="skill-row-bar"><div class="skill-row-fill"></div></div><div class="skill-row-pct">90%</div></div>
+    <div class="skill-row" style="--w:92%"><div class="skill-row-name">ANDROID SDK</div><div class="skill-row-bar"><div class="skill-row-fill"></div></div><div class="skill-row-pct">92%</div></div>
+    <div class="skill-row" style="--w:88%"><div class="skill-row-name">MVVM / MVI</div><div class="skill-row-bar"><div class="skill-row-fill"></div></div><div class="skill-row-pct">88%</div></div>
+    <div class="skill-row" style="--w:85%"><div class="skill-row-name">COROUTINES / FLOW</div><div class="skill-row-bar"><div class="skill-row-fill"></div></div><div class="skill-row-pct">85%</div></div>
+    <div class="skill-row" style="--w:82%"><div class="skill-row-name">ROOM / SQLITE</div><div class="skill-row-bar"><div class="skill-row-fill"></div></div><div class="skill-row-pct">82%</div></div>
+    <div class="skill-row" style="--w:80%"><div class="skill-row-name">HILT / DAGGER</div><div class="skill-row-bar"><div class="skill-row-fill"></div></div><div class="skill-row-pct">80%</div></div>
+    <div class="skill-row" style="--w:78%"><div class="skill-row-name">FIREBASE</div><div class="skill-row-bar"><div class="skill-row-fill"></div></div><div class="skill-row-pct">78%</div></div>
+    <div class="skill-row" style="--w:75%"><div class="skill-row-name">CI/CD</div><div class="skill-row-bar"><div class="skill-row-fill"></div></div><div class="skill-row-pct">75%</div></div>
+    <div class="skill-row" style="--w:72%"><div class="skill-row-name">UNIT TESTING</div><div class="skill-row-bar"><div class="skill-row-fill"></div></div><div class="skill-row-pct">72%</div></div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="cyber-sec-head">
+    <div class="cyber-label">// featured_projects</div>
+    <h2 class="cyber-h2">SELECTED <span>WORK</span></h2>
+  </div>
+  <div class="projects-cyber">
+    <div class="proj-card-cyber"><div class="proj-id">PRJ_001 · FINTECH</div><div class="proj-n">PayFlow Wallet</div><div class="proj-d">Real-time banking sync with biometric auth. 100K+ downloads. AI-powered spending insights.</div><div class="proj-stack-cyber"><span class="proj-tech-cyber">Kotlin</span><span class="proj-tech-cyber">Compose</span><span class="proj-tech-cyber">Biometrics</span></div></div>
+    <div class="proj-card-cyber"><div class="proj-id">PRJ_002 · LOGISTICS</div><div class="proj-n">TrackRoute</div><div class="proj-d">Real-time GPS tracking platform with offline-first architecture and live map updates.</div><div class="proj-stack-cyber"><span class="proj-tech-cyber">Maps SDK</span><span class="proj-tech-cyber">WorkManager</span><span class="proj-tech-cyber">WebSockets</span></div></div>
+    <div class="proj-card-cyber"><div class="proj-id">PRJ_003 · HEALTHCARE</div><div class="proj-n">MedAssist Pro</div><div class="proj-d">Telemedicine app with WebRTC video calls and HealthConnect integration.</div><div class="proj-stack-cyber"><span class="proj-tech-cyber">WebRTC</span><span class="proj-tech-cyber">HealthConnect</span><span class="proj-tech-cyber">Room</span></div></div>
+    <div class="proj-card-cyber"><div class="proj-id">PRJ_004 · OPEN SOURCE</div><div class="proj-n">ComposeKit</div><div class="proj-d">50+ production-ready Compose UI components with Material 3 support.</div><div class="proj-stack-cyber"><span class="proj-tech-cyber">Compose</span><span class="proj-tech-cyber">Material 3</span><span class="proj-tech-cyber">GitHub Actions</span></div></div>
+    <div class="proj-card-cyber"><div class="proj-id">PRJ_005 · MEDIA</div><div class="proj-n">StreamVault</div><div class="proj-d">Custom ExoPlayer streaming with adaptive bitrate, DRM, and PiP mode.</div><div class="proj-stack-cyber"><span class="proj-tech-cyber">ExoPlayer</span><span class="proj-tech-cyber">DRM</span><span class="proj-tech-cyber">PiP</span></div></div>
+    <div class="proj-card-cyber"><div class="proj-id">PRJ_006 · MESSAGING</div><div class="proj-n">ChatFlare</div><div class="proj-d">E2E encrypted messaging with real-time indicators and group chat.</div><div class="proj-stack-cyber"><span class="proj-tech-cyber">Firebase</span><span class="proj-tech-cyber">E2E</span><span class="proj-tech-cyber">Kotlin Flow</span></div></div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="foot-ascii">[ MKA.DEV ]</div>
+  <div class="foot-info">
+    moekyaw@example.com<br>
+    <a href="https://github.com/moekyaw-aung">github.com/moekyaw-aung</a> · 
+    <a href="#">linkedin.com/in/moekyawaung</a>
+  </div>
+</footer>
+
+<script>
+const cur=document.getElementById('cur'), ch=document.getElementById('ch');
+let mx=0,my=0,cx=0,cy=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  cur.style.cssText=`position:fixed;pointer-events:none;z-index:9999;left:${mx-3}px;top:${my-3}px;width:6px;height:6px;background:#00fff9;clip-path:polygon(50% 0%,100% 100%,0% 100%);filter:drop-shadow(0 0 6px #00fff9)`;
+});
+(function a(){cx+=(mx-cx)*0.12;cy+=(my-cy)*0.12;ch.style.transform=`translate(${cx-15}px,${cy-15}px)`;requestAnimationFrame(a);})();
+
+// stat bar line
+setTimeout(()=>document.querySelectorAll('.stat-block').forEach(el=>el.classList.add('loaded')),500);
+
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target);}}),{threshold:0.1});
+document.querySelectorAll('.cyber-label,.cyber-h2,.skill-row,.proj-card-cyber').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
